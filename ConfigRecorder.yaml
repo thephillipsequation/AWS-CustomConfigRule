@@ -1,0 +1,57 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Setup Config Service"
+Resources:
+  ConfigBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      AccessControl: BucketOwnerFullControl
+  
+  ConfigTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: config-topic
+      TopicName: config-topic
+  
+  ConfigRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: config.amazonaws.com
+        Version: "2012-10-17"
+        Path: "/"
+        Policies:
+          PolicyDocument:
+            Statement:
+              Effect: Allow
+              Action: "s3:PutObject"
+              Resource:
+                - !Join
+                - ""
+                - - !Ref ConfigBucket
+                  - "/AWSLogs/"
+                  - !Ref AWS::AccountId
+                  - "/*"
+              Condition:
+                StringLike:
+                  - s3:x-amz-acl: "bucket-owner-full-control"
+                Effect: Allow
+                Action: 
+                  - s3:GetBucketAcl
+                Resource:
+                  - !Join
+                  - ""
+                  - - "arn:aws:s3:::"
+                    - !Ref ConfigBucket
+                  Effect: Allow
+                  Action:
+                    - "config:Put*"
+                    - "iam:List*"
+                    - "iam:Get*"
+                  Resource: "*"
+              PolicyName: "root"
