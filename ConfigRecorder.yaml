@@ -25,7 +25,11 @@ Parameters:
       - eu-west-3
       - sa-east-1
 
-  
+  ConfigBucketName:
+    Description: The Name for the Config Bucket
+    Default: us-east-1-stellabs-config-bucket
+    Type: String
+
 Conditions: 
   RegionDefault: !Equals [ !Ref "AWS::Region" , !Ref DesiredRegion ]
 
@@ -35,6 +39,7 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       AccessControl: BucketOwnerFullControl
+      BucketName: !Ref ConfigBucketName
   
   ConfigBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -79,6 +84,10 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
+              # - 
+              #   Effect: "Allow"
+              #   Action: "*"
+              #   Resource: "*"
               -  
                 Effect: "Allow"
                 Action: "s3:PutObject"
@@ -90,7 +99,8 @@ Resources:
               -  
                 Effect: "Allow"
                 Action: "s3:GetBucketAcl"
-                Resource: !Sub "arn:aws:s3:::${ConfigBucket}"
+                Resource: 
+                  - !Sub arn:aws:s3:::${ConfigBucket}
               -  
                 Effect: "Allow"
                 Action: 
@@ -98,26 +108,31 @@ Resources:
                   - "ec2:Describe*"
                   - "iam:List*"
                   - "iam:Get*"
-                Resource: "*"
+                Resource: 
+                  - "*"
               -  
                 Effect: Allow
                 Action: "s3:PutObject"
-                Resource: !Sub "${ConfigBucket}/AWSLogs/${AWS::AccountId}/*"
+                Resource: 
+                  - !Sub arn.:aws:s3:::${ConfigBucket}/AWSLogs/${AWS::AccountId}/*
                 Condition:
                   StringLike:
-                    - s3:x-amz-acl: "bucket-owner-full-control"
+                    s3:x-amz-acl: 
+                      - "bucket-owner-full-control"
               -
                 Effect: Allow
                 Action: 
                   - s3:GetBucketAcl
-                Resource: !Sub "arn:aws:s3:::${ConfigBucket}"
+                Resource: 
+                  - !Sub arn:aws:s3:::${ConfigBucket}
               - 
                 Effect: Allow
                 Action:
                   - "config:Put*"
                   - "iam:List*"
                   - "iam:Get*"
-                Resource: "*"
+                Resource: 
+                  - "*"
               
 # Delivery Channel
   DeliveryChannel:
