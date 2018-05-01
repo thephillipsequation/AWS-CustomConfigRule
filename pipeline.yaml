@@ -13,23 +13,21 @@ Parameters:
     Default: master
     AllowedPattern: "[\\x20-\\x7E]*"
     ConstraintDescription: Can contain only ASCII characters.
+
 Resources:
   ArtifactBucket:
+    BucketName: "us-east-1-jp-cfn-241-lambda-code"
     Type: AWS::S3::bucket
     DeletionPolicy: Delete
 
-  GoCodeBucket:
-    Type: AWS::S3::bucket
-    DeletionPolicy: Retain
-
   CompliantBucket:
     Type: AWS::S3::bucket
-    BucketName: "us-east-1-jp-cfn-241"
+    BucketName: "us-east-1-jp-cfn-241-test-1"
     DeletionPolicy: Delete
 
   NonCompliantBucket:
     Type: AWS::S3::bucket
-    BucketName: "no-region-jp-cfn-241"
+    BucketName: "no-region-jp-cfn-241-test-2"
     DeletionPolicy: Delete
 
   CodeBuildRole:
@@ -107,43 +105,22 @@ Resources:
             Effect: Allow
           Version: '2012-10-17'
 
-  LambdaFunction:
-    Type: "AWS::Lambda::Function"
-    Properties: 
-      Code:
-        # Get list of S3 buckets that are non compliant
-      Description: Checks if S3 bucket names comply with naming convention
-      FunctionName: S3BucketComplianceCheck
-      Handler: String
-      KmsKeyArn: String
-      MemorySize: Integer
-      ReservedConcurrentExecutions: Integer
-      Role: String
-      Runtime: String
-      Timeout: Integer
-      TracingConfig:
-        TracingConfig
-      VpcConfig:
-        VPCConfig
-      Tags: 
-        Resource Tag
-  ConfigRule:
-    Type: "AWS::Config::ConfigRule"
+  ConfigRuleCodeBuild:
+    Type: "AWS::CodeBuild::Project"
     Properties:
-      Description: Evaluates if S3 Bucket Names start with AWS Region
-      InputParameters:
-        ParameterName : Value
-      MaximumExecutionFrequency: String
-      Scope:
-        Scope
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/python:2.7.12
       Source:
-        Owner: CUSTOM_LAMBDA
-        SourceDetails:
-          - 
-            EventSource: "aws.config"
-            MessageType: "ConfigurationItemChangeNotification"
-        SourceIdentifier:
-          - 
+        Location: "arn:aws:codecommit:us-east-1:324320755747:JP-CFN-241"
+        Type: CODECOMMIT
+      TimeoutInMinutes: 10
+      ServiceRole: !GetAtt 
+        - CodeBuildRole
+        - Arn
+      Artifacts:
+        Type: no_artifacts
 
   ConfigRulePipeline:
     Type: AWS::CodePipeline:Pipeline
@@ -158,6 +135,31 @@ Resources:
           Owner: AWS
           Version: '1'
           Provider: CodeCommit
+            - Name: Build
+        Actions:
+        - InputArtifacts: 
+            - Name: Source
+      - Name: Create Config Rule
+        Actions: 
+          - 
+            Name: CreateConfigRule
+            ActionTypeId:
+              Category: Deploy
+              Owner: AWS
+              Version: 
+              Provider: CloudFormation
+            InputArtifacts:
+              - Name: Source
+            Configuration:
+              StackName: jp-cfn-241-config-rule
+              ActionMode: CREATE_UPDATE
+              TemplatePath: Source::ConfigRule.yaml
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactS3Bucket
+      # if ConfigRule.yaml changes
+        # Zip up lambda.go and upload it to S3
+        # have code deploy launch ConfigRule.yaml and take locatiof of uploaded artifact as parameter
         
     
 

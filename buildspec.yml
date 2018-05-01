@@ -1,0 +1,18 @@
+version: 0.2
+
+# env:
+#   # variables:
+#   #    STACKNAME: "value"
+#   #    CHANGESETNAME: "value"
+phases:
+  install:
+    commands:
+      - pip install boto3
+      - pip install awscli
+  build:
+    commands:
+      - echo Archiving Source Code
+      - zip lambdacode.zip lambda.go
+  post_build:
+    commands:
+      - echo Build completed on `date`

@@ -1,0 +1,45 @@
+--- 
+ Description: Automate the creation of a custom AWS Config Rule that 
+  evaluates S3 buckets as compliant only when the bucket name starts with the region it's in
+  (i.e. 'us-west-2-awesomebucket')
+AWSTemplateFormatVersion: '2010-09-09'
+ 
+  LambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      Code:
+        S3Bucket:
+          - !Ref 
+      Description: Checks if S3 bucket names comply with naming convention
+      FunctionName: S3BucketComplianceCheck
+      Handler: String
+      KmsKeyArn: String
+      MemorySize: Integer
+      ReservedConcurrentExecutions: Integer
+      Role: String
+      Runtime: String
+      Timeout: Integer
+      TracingConfig:
+        TracingConfig
+      VpcConfig:
+        VPCConfig
+      Tags: 
+        Resource Tag
+
+  ConfigRule:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      Description: Evaluates if S3 Bucket Names start with AWS Region
+      MaximumExecutionFrequency: String
+      Scope:
+        ComplianceResourceTypes:
+          -
+            AWS::S3::Bucket
+      Source:
+        Owner: CUSTOM_LAMBDA
+        SourceDetails:
+          - 
+            EventSource: "aws.config"
+            MessageType: "ConfigurationItemChangeNotification"
+        SourceIdentifier:
+          - 
