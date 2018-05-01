@@ -1,0 +1,164 @@
+---
+Description: Automate the creation of a custom AWS Config Rule that 
+  evaluates S3 buckets as compliant only when the bucket name starts with the region it's in
+  (i.e. 'us-west-2-awesomebucket')
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  EmailAddress:
+    Description: Email Address for sending SNS notifications for CodeCommit
+    Type: String
+  RepositoryBranch:
+    Description: The name of the branch for the CodeCommit repo
+    Type: String
+    Default: master
+    AllowedPattern: "[\\x20-\\x7E]*"
+    ConstraintDescription: Can contain only ASCII characters.
+Resources:
+  ArtifactBucket:
+    Type: AWS::S3::bucket
+    DeletionPolicy: Delete
+
+  GoCodeBucket:
+    Type: AWS::S3::bucket
+    DeletionPolicy: Retain
+
+  CompliantBucket:
+    Type: AWS::S3::bucket
+    BucketName: "us-east-1-jp-cfn-241"
+    DeletionPolicy: Delete
+
+  NonCompliantBucket:
+    Type: AWS::S3::bucket
+    BucketName: "no-region-jp-cfn-241"
+    DeletionPolicy: Delete
+
+  CodeBuildRole:
+    Type: AWS::IAM::CodeBuildRole
+    Properties: 
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - codebuild.amazonaws.com
+          Action:
+          - sts:AssumeRole
+        Path: "/"
+        Policies:
+        - PolicyName: jp-cfn-241-codebuild-service
+          PolicyDocument:
+            Statement:
+            - Effect: Allow
+              Action: "*"
+              Resource: "*"
+            Version: '2012-10-17'
+
+  GoCodeBucketPolicy:
+  Type: "AWS::S3::BucketPolicy"
+  Properties: 
+    Bucket: String
+    PolicyDocument:
+      Statement:
+        Action: 
+          - "s3:GetObject"
+        Effect: "Allow"
+        Resource:
+          - !Sub arn::aws:s3:::${GoCodeBucket}
+
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - codepipeline.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: codepipeline-service
+        PolicyDocument:
+          Statement:
+          - Action:
+            - codecommit:GetBranch
+            - codecommit:GetCommit
+            - codecommit:UploadArchive
+            - codecommit:GetUploadArchiveStatus
+            - codecommit:CancelUploadArchive
+            - codebuild:*
+            Resource: "*"
+            Effect: Allow
+          - Action:
+            - s3:GetObject
+            - s3:GetObjectVersion
+            - s3:GetBucketVersioning
+            Resource: "*"
+            Effect: Allow
+          - Action:
+            - s3:PutObject
+            Resource:
+              - arn:aws:s3:::codepipeline*
+          - Action:
+            - lambda:InvokeFunction
+            - lambda:ListFunctions
+            Resource: "*"
+            Effect: Allow
+          Version: '2012-10-17'
+
+  LambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      Code:
+        # Get list of S3 buckets that are non compliant
+      Description: Checks if S3 bucket names comply with naming convention
+      FunctionName: S3BucketComplianceCheck
+      Handler: String
+      KmsKeyArn: String
+      MemorySize: Integer
+      ReservedConcurrentExecutions: Integer
+      Role: String
+      Runtime: String
+      Timeout: Integer
+      TracingConfig:
+        TracingConfig
+      VpcConfig:
+        VPCConfig
+      Tags: 
+        Resource Tag
+  ConfigRule:
+    Type: "AWS::Config::ConfigRule"
+    Properties:
+      Description: Evaluates if S3 Bucket Names start with AWS Region
+      InputParameters:
+        ParameterName : Value
+      MaximumExecutionFrequency: String
+      Scope:
+        Scope
+      Source:
+        Owner: CUSTOM_LAMBDA
+        SourceDetails:
+          - 
+            EventSource: "aws.config"
+            MessageType: "ConfigurationItemChangeNotification"
+        SourceIdentifier:
+          - 
+
+  ConfigRulePipeline:
+    Type: AWS::CodePipeline:Pipeline
+    Properties:
+      RoleArn: !GetAtt 
+        - CodePipelineRole
+        - Arn
+      Stages:
+      - Name: Source
+        ActionTypeId:
+          Category: Source
+          Owner: AWS
+          Version: '1'
+          Provider: CodeCommit
+        
+    
+
+

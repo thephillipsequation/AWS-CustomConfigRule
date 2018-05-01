@@ -90,19 +90,6 @@ Resources:
               #   Resource: "*"
               -  
                 Effect: "Allow"
-                Action: "s3:PutObject"
-                Resource: 
-                  - !Sub arn:aws:s3:::${ConfigBucket}/AWSLogs/${AWS::AccountId}/*
-                Condition: 
-                  StringLike: 
-                    s3:x-amz-acl: "bucket-owner-full-control"
-              -  
-                Effect: "Allow"
-                Action: "s3:GetBucketAcl"
-                Resource: 
-                  - !Sub arn:aws:s3:::${ConfigBucket}
-              -  
-                Effect: "Allow"
                 Action: 
                   - "config:Put*"
                   - "ec2:Describe*"
@@ -114,7 +101,7 @@ Resources:
                 Effect: Allow
                 Action: "s3:PutObject"
                 Resource: 
-                  - !Sub arn.:aws:s3:::${ConfigBucket}/AWSLogs/${AWS::AccountId}/*
+                  - !Sub arn:aws:s3:::${ConfigBucket}/AWSLogs/${AWS::AccountId}/*
                 Condition:
                   StringLike:
                     s3:x-amz-acl: 
