@@ -16,57 +16,50 @@ Parameters:
 
 Resources:
   ArtifactBucket:
-    BucketName: "us-east-1-jp-cfn-241-lambda-code"
-    Type: AWS::S3::bucket
+    Properties:
+      BucketName: "us-east-1-jp-cfn-241-lambda-code"
+    Type: AWS::S3::Bucket
     DeletionPolicy: Delete
 
   CompliantBucket:
-    Type: AWS::S3::bucket
-    BucketName: "us-east-1-jp-cfn-241-test-1"
+    Properties:
+      BucketName: "us-east-1-jp-cfn-241-test-1"
+    Type: AWS::S3::Bucket
     DeletionPolicy: Delete
 
   NonCompliantBucket:
-    Type: AWS::S3::bucket
-    BucketName: "no-region-jp-cfn-241-test-2"
+    Properties:
+      BucketName: "no-region-jp-cfn-241-test-2"
+    Type: AWS::S3::Bucket
     DeletionPolicy: Delete
 
   CodeBuildRole:
-    Type: AWS::IAM::CodeBuildRole
+    Type: AWS::IAM::Role
     Properties: 
       AssumeRolePolicyDocument:
+        Version: "2012-10-17"
         Statement:
         - Effect: Allow
           Principal:
             Service:
-            - codebuild.amazonaws.com
+              - codebuild.amazonaws.com
           Action:
           - sts:AssumeRole
-        Path: "/"
-        Policies:
+      Policies:
         - PolicyName: jp-cfn-241-codebuild-service
           PolicyDocument:
+            Version: '2012-10-17'
             Statement:
             - Effect: Allow
               Action: "*"
               Resource: "*"
-            Version: '2012-10-17'
-
-  GoCodeBucketPolicy:
-  Type: "AWS::S3::BucketPolicy"
-  Properties: 
-    Bucket: String
-    PolicyDocument:
-      Statement:
-        Action: 
-          - "s3:GetObject"
-        Effect: "Allow"
-        Resource:
-          - !Sub arn::aws:s3:::${GoCodeBucket}
+            
 
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
+        Version: "2012-10-17"
         Statement:
         - Effect: Allow
           Principal:
@@ -74,92 +67,85 @@ Resources:
             - codepipeline.amazonaws.com
           Action:
           - sts:AssumeRole
-      Path: "/"
       Policies:
       - PolicyName: codepipeline-service
         PolicyDocument:
+          Version: "2012-10-17"
           Statement:
-          - Action:
+          - 
+            Action:
             - codecommit:GetBranch
             - codecommit:GetCommit
             - codecommit:UploadArchive
             - codecommit:GetUploadArchiveStatus
             - codecommit:CancelUploadArchive
             - codebuild:*
-            Resource: "*"
+            Resource:
+              - "*"
             Effect: Allow
           - Action:
             - s3:GetObject
             - s3:GetObjectVersion
             - s3:GetBucketVersioning
-            Resource: "*"
+            Resource: 
+              - "*"
             Effect: Allow
           - Action:
             - s3:PutObject
             Resource:
               - arn:aws:s3:::codepipeline*
+            Effect: Allow
           - Action:
             - lambda:InvokeFunction
             - lambda:ListFunctions
-            Resource: "*"
+            Resource: 
+              - "*"
             Effect: Allow
           Version: '2012-10-17'
 
-  ConfigRuleCodeBuild:
-    Type: "AWS::CodeBuild::Project"
-    Properties:
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/python:2.7.12
-      Source:
-        Location: "arn:aws:codecommit:us-east-1:324320755747:JP-CFN-241"
-        Type: CODECOMMIT
-      TimeoutInMinutes: 10
-      ServiceRole: !GetAtt 
-        - CodeBuildRole
-        - Arn
-      Artifacts:
-        Type: no_artifacts
-
   ConfigRulePipeline:
-    Type: AWS::CodePipeline:Pipeline
+    Type: "AWS::CodePipeline::Pipeline"
     Properties:
-      RoleArn: !GetAtt 
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactBucket
+      RoleArn: !GetAtt
         - CodePipelineRole
         - Arn
       Stages:
-      - Name: Source
-        ActionTypeId:
-          Category: Source
-          Owner: AWS
-          Version: '1'
-          Provider: CodeCommit
-            - Name: Build
+      - 
+        Name: Source
         Actions:
-        - InputArtifacts: 
+        - InputArtifacts: []
+          Name: CodeCommit
+          ActionTypeId:
+            Category: Source
+            Owner: AWS
+            Version: '1'
+            Provider: CodeCommit
+          OutputArtifacts:
             - Name: Source
-      - Name: Create Config Rule
-        Actions: 
-          - 
-            Name: CreateConfigRule
-            ActionTypeId:
-              Category: Deploy
-              Owner: AWS
-              Version: 
-              Provider: CloudFormation
-            InputArtifacts:
-              - Name: Source
-            Configuration:
-              StackName: jp-cfn-241-config-rule
-              ActionMode: CREATE_UPDATE
-              TemplatePath: Source::ConfigRule.yaml
-      ArtifactStore:
-        Type: S3
-        Location: !Ref ArtifactS3Bucket
-      # if ConfigRule.yaml changes
-        # Zip up lambda.go and upload it to S3
-        # have code deploy launch ConfigRule.yaml and take locatiof of uploaded artifact as parameter
+          Configuration:
+            BranchName: !Ref RepositoryBranch
+            RepositoryName: JP-CFN-241
+          RunOrder: 1
+      - 
+          Name: CreateConfigRule
+          Actions: 
+            - 
+              Name: CreateConfigRule
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: CloudFormation
+              InputArtifacts:
+                - Name: Source
+              Configuration:
+                StackName: jp-cfn-241-config-rule
+                ActionMode: CREATE_UPDATE
+                TemplatePath: Source::ConfigRule.yaml
+
         
     
 
