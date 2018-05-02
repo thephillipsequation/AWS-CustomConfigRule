@@ -108,7 +108,7 @@ Resources:
       Environment:
         EnvironmentVariables:
           - Name: S3BUCKET
-            Type: String
+            Type: PLAINTEXT
             Value: !Ref ArtifactBucket
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
@@ -134,48 +134,48 @@ Resources:
         - CodePipelineRole
         - Arn
       Stages:
-      - 
-        Name: Source
-        Actions:
-        - InputArtifacts: []
-          Name: CodeCommit
-          ActionTypeId:
-            Category: Source
-            Owner: AWS
-            Version: '1'
-            Provider: CodeCommit
-          OutputArtifacts:
-            - Name: Source
-          Configuration:
-            BranchName: !Ref RepositoryBranch
-            RepositoryName: JP-CFN-241
-          RunOrder: 1
+        - 
+          Name: Source
+          Actions:
+            - InputArtifacts: []
+              Name: CodeCommit
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: '1'
+                Provider: CodeCommit
+              OutputArtifacts:
+                - Name: Source
+              Configuration:
+                BranchName: !Ref RepositoryBranch
+                RepositoryName: JP-CFN-241
+              RunOrder: 1
         - 
           Name: BuildLambda
           Actions:
-            - 
-            InputArtifacts:
+            - InputArtifacts:
               - Name: Source
-            Name: BuildLambda
-            ActionTypeId:
-              Category: Build
-              Owner: AWS
-              Version: 1
-              Provider: CodeBuild
-            Configuration:
-              ProjectName: jp-cfn-241
+              Name: BuildLambda
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: jp-cfn-241
         - 
           Name: CreateConfigRule
           Actions: 
             - 
+              InputArtifacts:
+                - Name: Source
               Name: CreateConfigRule
               ActionTypeId:
                 Category: Deploy
                 Owner: AWS
                 Version: 1
                 Provider: CloudFormation
-              InputArtifacts:
-                - Name: Source
+              
               Configuration:
                 StackName: jp-cfn-241-config-rule
                 ActionMode: CREATE_UPDATE
