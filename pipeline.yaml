@@ -83,9 +83,7 @@ Resources:
               - "*"
             Effect: Allow
           - Action:
-            - s3:GetObject
-            - s3:GetObjectVersion
-            - s3:GetBucketVersioning
+            - s3:*
             Resource: 
               - "*"
             Effect: Allow
@@ -105,6 +103,7 @@ Resources:
   CodeBuild:
     Type: "AWS::CodeBuild::Project"
     Properties:
+      Name: jp-cfn-241
       Environment:
         EnvironmentVariables:
           - Name: S3BUCKET
@@ -162,7 +161,7 @@ Resources:
                 Version: 1
                 Provider: CodeBuild
               Configuration:
-                ProjectName: jp-cfn-241
+                ProjectName: !Ref CodeBuild
         - 
           Name: CreateConfigRule
           Actions: 
