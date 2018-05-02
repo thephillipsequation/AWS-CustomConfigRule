@@ -116,9 +116,6 @@ Resources:
       Source:
         Location: "arn:aws:codecommit:us-east-1:324320755747:JP-CFN-241"
         Type: CODECOMMIT
-      Tags:
-        - Key: Owner
-          Value: !Ref ProjectName
       TimeoutInMinutes: 10
       ServiceRole: !GetAtt 
         - CodeBuildRole
@@ -153,16 +150,20 @@ Resources:
             BranchName: !Ref RepositoryBranch
             RepositoryName: JP-CFN-241
           RunOrder: 1
-        - InputArtifacts:
-            - Name: Source
+        - 
           Name: BuildLambda
-          ActionTypeId:
-            Category: Build
-            Owner: AWS
-            Version: 1
-            Provider: CodeBuild
-          Configuration:
-            ProjectName: jp-cfn-241
+          Actions:
+            - 
+            InputArtifacts:
+              - Name: Source
+            Name: BuildLambda
+            ActionTypeId:
+              Category: Build
+              Owner: AWS
+              Version: 1
+              Provider: CodeBuild
+            Configuration:
+              ProjectName: jp-cfn-241
         - 
           Name: CreateConfigRule
           Actions: 
