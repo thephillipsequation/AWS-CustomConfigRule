@@ -54,7 +54,6 @@ Resources:
               Action: "*"
               Resource: "*"
             
-
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
@@ -103,6 +102,31 @@ Resources:
             Effect: Allow
           Version: '2012-10-17'
 
+  CodeBuild:
+    Type: "AWS::CodeBuild::Project"
+    Properties:
+      Environment:
+        EnvironmentVariables:
+          - Name: S3BUCKET
+            Type: String
+            Value: !Ref ArtifactBucket
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/golang:1:10
+      Source:
+        Location: "arn:aws:codecommit:us-east-1:324320755747:JP-CFN-241"
+        Type: CODECOMMIT
+      Tags:
+        - Key: Owner
+          Value: !Ref ProjectName
+      TimeoutInMinutes: 10
+      ServiceRole: !GetAtt 
+        - CodeBuildRole
+        - Arn
+      Artifacts:
+        Type: S3
+        Location: !Ref ArtifactBucket
+
   ConfigRulePipeline:
     Type: "AWS::CodePipeline::Pipeline"
     Properties:
@@ -129,7 +153,17 @@ Resources:
             BranchName: !Ref RepositoryBranch
             RepositoryName: JP-CFN-241
           RunOrder: 1
-      - 
+        - InputArtifacts:
+            - Name: Source
+          Name: BuildLambda
+          ActionTypeId:
+            Category: Build
+            Owner: AWS
+            Version: 1
+            Provider: CodeBuild
+          Configuration:
+            ProjectName: jp-cfn-241
+        - 
           Name: CreateConfigRule
           Actions: 
             - 
@@ -145,6 +179,7 @@ Resources:
                 StackName: jp-cfn-241-config-rule
                 ActionMode: CREATE_UPDATE
                 TemplatePath: Source::ConfigRule.yaml
+                TemplateConfiguration: Source::ConfigRuleParamters.json
 
         
     

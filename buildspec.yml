@@ -1,9 +1,8 @@
 version: 0.2
 
-# env:
-#   # variables:
-#   #    STACKNAME: "value"
-#   #    CHANGESETNAME: "value"
+env:
+  variables:
+     S3BUCKET: "value"
 phases:
   install:
     commands:
@@ -13,6 +12,10 @@ phases:
     commands:
       - echo Archiving Source Code
       - zip lambdacode.zip lambda.go
+      - aws s3 cp lambdacode.zip $S3BUCKET
   post_build:
     commands:
       - echo Build completed on `date`
+  artifacts:
+    - lambdacode.zip
+    - ConfigRuleParamters.json
