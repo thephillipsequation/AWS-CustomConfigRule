@@ -16,7 +16,7 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-  artifacts:
-    files:
-      - lambdacode.zip
-      - ConfigRuleParamters.json
+artifacts:
+  files:
+    - lambdacode.zip
+    - ConfigRuleParamters.json
