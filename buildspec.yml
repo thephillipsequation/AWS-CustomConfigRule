@@ -11,6 +11,7 @@ phases:
   build:
     commands:
       - echo Archiving Source Code
+      - echo $S3BUCKET
       - zip lambdacode.zip lambda.go
       - aws s3 cp lambdacode.zip $S3BUCKET
   post_build:
