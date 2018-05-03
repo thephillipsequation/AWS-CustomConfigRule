@@ -108,7 +108,7 @@ Resources:
         EnvironmentVariables:
           - Name: S3BUCKET
             Type: PLAINTEXT
-            Value: !Ref ArtifactBucket
+            Value: !Sub s3://${ArtifactBucket}
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/golang:1.10
