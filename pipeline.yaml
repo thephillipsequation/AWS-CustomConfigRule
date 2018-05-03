@@ -111,7 +111,7 @@ Resources:
             Value: !Ref ArtifactBucket
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/golang:1:10
+        Image: aws/codebuild/golang:1.10
       Source:
         Location: "arn:aws:codecommit:us-east-1:324320755747:JP-CFN-241"
         Type: CODECOMMIT
