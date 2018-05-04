@@ -98,6 +98,10 @@ Resources:
             Resource: 
               - "*"
             Effect: Allow
+          - Action:
+            - cloudformation:*
+            Effect: Allow
+            Resource: "*"
           Version: '2012-10-17'
 
   CodeBuild:
