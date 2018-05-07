@@ -21,8 +21,8 @@ phases:
       - aws s3 cp lambdacode.zip $S3BUCKET
       - RESPONSE=$(aws s3api list-object-versions --bucket us-east-1-jp-cfn-241-lambda-code  --prefix lambdacode.zip)
       # - ID=$(echo $response | python -c "import sys, json; print json.load(sys.stdin)['Versions'][0]['Owner']['ID']")
-      - ID="325cbed028b3247baa4404c5c980cc7554f85fc72bd5140692f3b781beedeb33"
-      - cat <<EOF > ConfigRuleParameters.json {"Parameters": { "ObjectVersion" : "$ID"}} EOF
+      - export ID="325cbed028b3247baa4404c5c980cc7554f85fc72bd5140692f3b781beedeb33"
+      - cat << EOF > ConfigRuleParameters.json {"Parameters" : { "ObjectVersion" : "$ID"}} EOF
   post_build:
     commands:
       - echo Build completed on `date`
