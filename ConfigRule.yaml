@@ -40,7 +40,7 @@ AWSTemplateFormatVersion: '2010-09-09'
       Code:
         S3Bucket: !Ref CodeBucket
         S3Key: "main.zip"
-        S3ObjectVersion: !Ref ObjectVersion
+        # S3ObjectVersion: !Ref ObjectVersion
       Description: Checks if S3 bucket names comply with naming convention
       FunctionName: S3BucketComplianceCheck
       Handler: S3BucketComplianceChek

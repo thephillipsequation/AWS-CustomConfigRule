@@ -184,7 +184,7 @@ Resources:
                 RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/${CodePipelineRole}
                 ActionMode: CREATE_UPDATE
                 TemplatePath: Source::ConfigRule.yaml
-                TemplateConfiguration: Source::ConfigRuleParamters.json
+                # TemplateConfiguration: Source::ConfigRuleParamters.json
 
         
     

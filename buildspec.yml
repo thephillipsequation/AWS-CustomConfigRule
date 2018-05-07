@@ -6,14 +6,22 @@ env:
 phases:
   install:
     commands:
-      - pip install boto3
       - pip install awscli
+      - apt-get update 
+      - apt-get jq
+      - go get "github.com/aws/aws-lambda-go/lambda"
+      - go get "github.com/aws/aws-sdk-go/aws"
+      - 
   build:
     commands:
       - echo Archiving Source Code
       - echo $S3BUCKET
-      - zip lambdacode.zip lambda.go
+      - GOOS=linux GOARCH=amd64 go build -o main lambda.go
+      - zip lambdacode.zip main
       - aws s3 cp lambdacode.zip $S3BUCKET
+      - RESPONSE=$(aws s3api list-object-versions --bucket us-east-1-jp-cfn-241-lambda-code  --prefix lambdacode.zip)
+      - ID=$(echo $response | python -c "import sys, json; print json.load(sys.stdin)['Versions'][0]['Owner']['ID']")
+      - cat <<EOF > ConfigRuleParameters.json {"Parameters": { "ObjectVersion" : "$ID"}} EOF
   post_build:
     commands:
       - echo Build completed on `date`
