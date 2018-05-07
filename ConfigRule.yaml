@@ -44,8 +44,11 @@ Resources:
       Runtime: go1.x
   ConfigRule:
     Type: "AWS::Config::ConfigRule"
+    DependsOn: LambdaFunction
     Properties:
       Description: Evaluates if S3 Bucket Names start with AWS Region
+      MaximumExecutionFrequency:
+        - "Six_Hours"
       Scope:
         ComplianceResourceTypes:
           -
