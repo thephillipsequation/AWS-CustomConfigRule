@@ -71,37 +71,43 @@ Resources:
         PolicyDocument:
           Version: "2012-10-17"
           Statement:
-          - 
-            Action:
-            - codecommit:GetBranch
-            - codecommit:GetCommit
-            - codecommit:UploadArchive
-            - codecommit:GetUploadArchiveStatus
-            - codecommit:CancelUploadArchive
-            - codebuild:*
-            Resource:
-              - "*"
-            Effect: Allow
-          - Action:
-            - s3:*
-            Resource: 
-              - "*"
-            Effect: Allow
-          - Action:
-            - s3:PutObject
-            Resource:
-              - arn:aws:s3:::codepipeline*
-            Effect: Allow
-          - Action:
-            - lambda:InvokeFunction
-            - lambda:ListFunctions
-            Resource: 
-              - "*"
-            Effect: Allow
-          - Action:
-            - cloudformation:*
-            Effect: Allow
-            Resource: "*"
+            -
+              Action: 
+                - "*"
+              Effect: "*"
+              Resource:
+                - "*"
+          # - 
+          #   Action:
+          #   - codecommit:GetBranch
+          #   - codecommit:GetCommit
+          #   - codecommit:UploadArchive
+          #   - codecommit:GetUploadArchiveStatus
+          #   - codecommit:CancelUploadArchive
+          #   - codebuild:*
+          #   Resource:
+          #     - "*"
+          #   Effect: Allow
+          # - Action:
+          #   - s3:*
+          #   Resource: 
+          #     - "*"
+          #   Effect: Allow
+          # - Action:
+          #   - s3:PutObject
+          #   Resource:
+          #     - arn:aws:s3:::codepipeline*
+          #   Effect: Allow
+          # - Action:
+          #   - lambda:InvokeFunction
+          #   - lambda:ListFunctions
+          #   Resource: 
+          #     - "*"
+          #   Effect: Allow
+          # - Action:
+          #   - cloudformation:*
+          #   Effect: Allow
+          #   Resource: "*"
           Version: '2012-10-17'
 
   CodeBuild:
