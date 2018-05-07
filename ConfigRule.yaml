@@ -4,7 +4,7 @@ Parameters:
   #   Type: String
   CodeBucket:
     Type: String
-    Default: "s3://us-east-1-jp-cfn-241-lambda-code"
+    Default: "us-east-1-jp-cfn-241-lambda-code"
 Resources:
   LambdaRole:
     Type: "AWS::IAM::Role"
