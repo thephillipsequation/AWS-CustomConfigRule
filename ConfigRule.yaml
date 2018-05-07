@@ -46,7 +46,8 @@ Resources:
     Type: "AWS::Config::ConfigRule"
     Properties:
       Description: Evaluates if S3 Bucket Names start with AWS Region
-      MaximumExecutionFrequency: String
+      MaximumExecutionFrequency:
+        - "Six_Hours"
       Scope:
         ComplianceResourceTypes:
           -
