@@ -7,11 +7,8 @@ phases:
   install:
     commands:
       - pip install awscli
-      - apt-get update 
-      - apt-get jq
       - go get "github.com/aws/aws-lambda-go/lambda"
       - go get "github.com/aws/aws-sdk-go/aws"
-      - 
   build:
     commands:
       - echo Archiving Source Code
