@@ -56,4 +56,4 @@ Resources:
           - 
             EventSource: "aws.config"
             MessageType: "ConfigurationItemChangeNotification"
-        SourceIdentifier: !sub arn:aws:lambda:${AWS::Region}:${AWS:AccountId}:function:S3BucketComplianceCheck
+        SourceIdentifier: !Sub arn:aws:lambda:${AWS::Region}:${AWS:AccountId}:function:S3BucketComplianceCheck
