@@ -1,8 +1,8 @@
 --- 
 AWSTemplateFormatVersion: '2010-09-09'
   Parameters:
-    ObjectVersion:
-      Type: String
+    # ObjectVersion:
+    #   Type: String
     CodeBucket:
       Type: String
   Resources:
@@ -30,7 +30,7 @@ AWSTemplateFormatVersion: '2010-09-09'
                   Action: "*"
                   Resource:
                     - "*"
-  
+
     LambdaFunction:
       Type: "AWS::Lambda::Function"
       Properties: 
@@ -43,7 +43,7 @@ AWSTemplateFormatVersion: '2010-09-09'
         Handler: S3BucketComplianceChek
         Role: !Ref LambdaRole
         Runtime: go1.x
-  
+
     ConfigRule:
       Type: "AWS::Config::ConfigRule"
       Properties:

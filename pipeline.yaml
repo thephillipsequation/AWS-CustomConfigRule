@@ -175,6 +175,7 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref CodeBuild
+              RunOrder: 2
         - 
           Name: CreateConfigRule
           Actions: 
@@ -194,6 +195,7 @@ Resources:
                 ActionMode: CREATE_UPDATE
                 TemplatePath: Source::ConfigRule.yaml
                 # TemplateConfiguration: Source::ConfigRuleParamters.json
+              RunOrder: 3
 
         
     
