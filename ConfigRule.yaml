@@ -40,8 +40,9 @@ Resources:
       Description: Checks if S3 bucket names comply with naming convention
       FunctionName: S3BucketComplianceCheck
       Handler: S3BucketComplianceChek
-      Role: !Ref LambdaRole
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/${LambdaRole} 
       Runtime: go1.x
+
   ConfigRule:
     Type: "AWS::Config::ConfigRule"
     DependsOn: LambdaFunction
