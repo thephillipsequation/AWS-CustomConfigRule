@@ -192,7 +192,7 @@ Resources:
               Configuration:
                 StackName: jp-cfn-241-config-rule
                 RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/${CodePipelineRole}
-                ActionMode: CREATE_UPDATE
+                ActionMode: REPLACE_ON_FAILURE
                 Capabilities: CAPABILITY_NAMED_IAM
                 TemplatePath: Source::ConfigRule.yaml
                 # TemplateConfiguration: Source::ConfigRuleParamters.json
