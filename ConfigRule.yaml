@@ -1,65 +1,62 @@
 --- 
- Description: Automate the creation of a custom AWS Config Rule that 
-  evaluates S3 buckets as compliant only when the bucket name starts with the region it's in
-  (i.e. 'us-west-2-awesomebucket')
 AWSTemplateFormatVersion: '2010-09-09'
   Parameters:
     ObjectVersion:
       Type: String
     CodeBucket:
       Type: String
-
-  LambdaRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      RoleName: "lambda-config-role"
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          Effect: "Allow"
-          Principal:
-            Service:
-              - "lambda.amazonaws.com"
-          Action:
-            - "sts:AssumeRole"
-      Policies:
-        -
-          PolicyName: "lambda-config-policy"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - 
-                Effect: "Allow"
-                Action: "*"
-                Resource:
-                  - "*"
-
-  LambdaFunction:
-    Type: "AWS::Lambda::Function"
-    Properties: 
-      Code:
-        S3Bucket: !Ref CodeBucket
-        S3Key: "main.zip"
-        # S3ObjectVersion: !Ref ObjectVersion
-      Description: Checks if S3 bucket names comply with naming convention
-      FunctionName: S3BucketComplianceCheck
-      Handler: S3BucketComplianceChek
-      Role: !Ref LambdaRole
-      Runtime: go1.x
-
-  ConfigRule:
-    Type: "AWS::Config::ConfigRule"
-    Properties:
-      Description: Evaluates if S3 Bucket Names start with AWS Region
-      MaximumExecutionFrequency: String
-      Scope:
-        ComplianceResourceTypes:
+  Resources:
+    LambdaRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        RoleName: "lambda-config-role"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+        Policies:
           -
-            AWS::S3::Bucket
-      Source:
-        Owner: CUSTOM_LAMBDA
-        SourceDetails:
-          - 
-            EventSource: "aws.config"
-            MessageType: "ConfigurationItemChangeNotification"
-        SourceIdentifier: !sub arn:aws:lambda:${AWS::Region}:${AWS:AccountId}:function:${LambdaFunction.FunctionName}
+            PolicyName: "lambda-config-policy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - 
+                  Effect: "Allow"
+                  Action: "*"
+                  Resource:
+                    - "*"
+  
+    LambdaFunction:
+      Type: "AWS::Lambda::Function"
+      Properties: 
+        Code:
+          S3Bucket: !Ref CodeBucket
+          S3Key: "main.zip"
+          # S3ObjectVersion: !Ref ObjectVersion
+        Description: Checks if S3 bucket names comply with naming convention
+        FunctionName: S3BucketComplianceCheck
+        Handler: S3BucketComplianceChek
+        Role: !Ref LambdaRole
+        Runtime: go1.x
+  
+    ConfigRule:
+      Type: "AWS::Config::ConfigRule"
+      Properties:
+        Description: Evaluates if S3 Bucket Names start with AWS Region
+        MaximumExecutionFrequency: String
+        Scope:
+          ComplianceResourceTypes:
+            -
+              AWS::S3::Bucket
+        Source:
+          Owner: CUSTOM_LAMBDA
+          SourceDetails:
+            - 
+              EventSource: "aws.config"
+              MessageType: "ConfigurationItemChangeNotification"
+          SourceIdentifier: !sub arn:aws:lambda:${AWS::Region}:${AWS:AccountId}:function:${LambdaFunction.FunctionName}

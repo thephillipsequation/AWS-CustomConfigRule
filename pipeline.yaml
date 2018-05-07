@@ -64,6 +64,9 @@ Resources:
           Principal:
             Service:
             - codepipeline.amazonaws.com
+            - lambda.amazonaws.com
+            - config.amazonaws.com
+            - cloudformation.amazonaws.com
           Action:
           - sts:AssumeRole
       Policies:
