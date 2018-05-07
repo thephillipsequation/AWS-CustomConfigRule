@@ -1,9 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
-  ObjectVersion:
-    Type: String
+  # ObjectVersion:
+  #   Type: String
   CodeBucket:
     Type: String
+    default: "us-east-1-jp-cfn-241-lambda-code"
 Resources:
   LambdaRole:
     Type: "AWS::IAM::Role"
