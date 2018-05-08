@@ -45,6 +45,7 @@ Resources:
 
   ConfigPermission:
     Type: "AWS::Lambda::Permission"
+    DependsOn: LambdaFunction
     Properties:
       FunctionName: arn:aws:lambda:us-east-1:324320755747:function:S3BucketComplianceCheck
       Action: "lambda:InvokeFunction"
@@ -52,7 +53,7 @@ Resources:
 
   ConfigRule:
     Type: "AWS::Config::ConfigRule"
-    DependsOn: LambdaFunction
+    DependsOn: ConfigPermission
     Properties:
       Description: Evaluates if S3 Bucket Names start with AWS Region
       MaximumExecutionFrequency: "Six_Hours"
