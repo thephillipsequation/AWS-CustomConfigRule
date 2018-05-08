@@ -43,13 +43,19 @@ Resources:
       Role: !Sub arn:aws:iam::${AWS::AccountId}:role/${LambdaRole} 
       Runtime: go1.x
 
+  ConfigPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: arn:aws:lambda:us-east-1:324320755747:function:S3BucketComplianceCheck
+      Action: "lambda:InvokeFunction"
+      Principal: "config.amazonaws.com"
+
   ConfigRule:
     Type: "AWS::Config::ConfigRule"
     DependsOn: LambdaFunction
     Properties:
       Description: Evaluates if S3 Bucket Names start with AWS Region
-      MaximumExecutionFrequency:
-        - "Six_Hours"
+      MaximumExecutionFrequency: "Six_Hours"
       Scope:
         ComplianceResourceTypes:
           -
@@ -60,4 +66,4 @@ Resources:
           - 
             EventSource: "aws.config"
             MessageType: "ConfigurationItemChangeNotification"
-        SourceIdentifier: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:S3BucketComplianceCheck
+        SourceIdentifier: arn:aws:lambda:us-east-1:324320755747:function:S3BucketComplianceCheck
