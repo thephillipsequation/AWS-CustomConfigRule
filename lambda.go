@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
-	// "github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws"
 	// "github.com/aws/aws-sdk-go/aws/session"
 	// "github.com/aws/aws-sdk-go/service/configservice"
 	"strings"
@@ -35,7 +35,7 @@ func Handler(ctx context.Context, event ConfigEvent) (string, error) {
 
 	// session := session.Must(session.NewSession())
 	// config := configservice.New(session, &aws.Config{})
-	fmt.Println(event.InvokingEvent)
+	fmt.Print(aws.String(event.InvokingEvent))
 	// params := &configservice.PutEvaluationsInput{
 	// 	ResultToken: aws.String("String"), // Required
 	// 	Evaluations: []*configservice.Evaluation{
