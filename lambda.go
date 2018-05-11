@@ -31,7 +31,7 @@ func evaluateCompliance(bucketName, region string) string {
 	}
 }
 
-func Handler(ctx context.Context, event ConfigEvent) string {
+func Handler(ctx context.Context, event ConfigEvent) (string, error) {
 
 	// session := session.Must(session.NewSession())
 	// config := configservice.New(session, &aws.Config{})
@@ -56,7 +56,7 @@ func Handler(ctx context.Context, event ConfigEvent) string {
 	// 	return
 	// }
 	// violation := nameViolation(bucketName, region)
-	return event.InvokingEvent
+	return fmt.Sprintf("InvokingEvent: %s", event.InvokingEvent), nil
 
 }
 
