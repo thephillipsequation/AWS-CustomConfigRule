@@ -53,12 +53,12 @@ func Handler(ctx context.Context, configEvent) string {
 	// 	},
 	// }
 	// resp, err = config.PutEvaluations(params)
-	// if err != nil {
-	// 	// Print the error, cast err to the awserr.Error to get the Code and
-	// 	// Message from an error.
-	// 	fmt.PrinLn(err.Error())
-	// 	return
-	// }
+	if err != nil {
+		// Print the error, cast err to the awserr.Error to get the Code and
+		// Message from an error.
+		fmt.PrinLn(err.Error())
+			return
+	}
 	// violation := nameViolation(bucketName, region)
 
 }
