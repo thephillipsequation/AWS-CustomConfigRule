@@ -35,7 +35,7 @@ func Handler(ctx context.Context, event ConfigEvent) string {
 
 	// session := session.Must(session.NewSession())
 	// config := configservice.New(session, &aws.Config{})
-	fmt.Println(event)
+	fmt.Println(event.InvokingEvent)
 	// params := &configservice.PutEvaluationsInput{
 	// 	ResultToken: aws.String("String"), // Required
 	// 	Evaluations: []*configservice.Evaluation{
