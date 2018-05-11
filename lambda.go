@@ -2,15 +2,12 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/configservice"
-	"log"
+	// "github.com/aws/aws-sdk-go/aws"
+	// "github.com/aws/aws-sdk-go/aws/session"
+	// "github.com/aws/aws-sdk-go/service/configservice"
 	"strings"
-	"time"
 )
 
 type ConfigEvent struct {
@@ -35,10 +32,10 @@ func evaluateCompliance(bucketName, region string) string {
 }
 
 func Handler(ctx context.Context, event ConfigEvent) string {
-	// Creating session via
-	session := session.Must(session.NewSession())
-	config := configservice.New(session, &aws.Config{})
-	fmt.Println(configEvent)
+
+	// session := session.Must(session.NewSession())
+	// config := configservice.New(session, &aws.Config{})
+	fmt.Println(event)
 	// params := &configservice.PutEvaluationsInput{
 	// 	ResultToken: aws.String("String"), // Required
 	// 	Evaluations: []*configservice.Evaluation{
@@ -52,13 +49,14 @@ func Handler(ctx context.Context, event ConfigEvent) string {
 	// 	},
 	// }
 	// resp, err = config.PutEvaluations(params)
-	if err != nil {
-		// Print the error, cast err to the awserr.Error to get the Code and
-		// Message from an error.
-		fmt.PrinLn(err.Error())
-		return
-	}
+	// if err != nil {
+	// 	// Print the error, cast err to the awserr.Error to get the Code and
+	// 	// Message from an error.
+	// 	fmt.PrinLn(err.Error())
+	// 	return
+	// }
 	// violation := nameViolation(bucketName, region)
+	return event.InvokingEvent
 
 }
 
