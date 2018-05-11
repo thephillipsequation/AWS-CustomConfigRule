@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/configservice"
@@ -26,7 +26,6 @@ type ConfigEvent struct {
 	Version          string `json:"version"`
 }
 
-
 func evaluateCompliance(bucketName, region string) string {
 	if strings.HasPrefix(bucketName, region) {
 		return "COMPLIANT"
@@ -35,11 +34,11 @@ func evaluateCompliance(bucketName, region string) string {
 	}
 }
 
-func Handler(ctx context.Context, configEvent) string {
+func Handler(ctx context.Context, event ConfigEvent) string {
 	// Creating session via
 	session := session.Must(session.NewSession())
 	config := configservice.New(session, &aws.Config{})
-	fmt.Println configEvent
+	fmt.Println(configEvent)
 	// params := &configservice.PutEvaluationsInput{
 	// 	ResultToken: aws.String("String"), // Required
 	// 	Evaluations: []*configservice.Evaluation{
@@ -57,7 +56,7 @@ func Handler(ctx context.Context, configEvent) string {
 		// Print the error, cast err to the awserr.Error to get the Code and
 		// Message from an error.
 		fmt.PrinLn(err.Error())
-			return
+		return
 	}
 	// violation := nameViolation(bucketName, region)
 

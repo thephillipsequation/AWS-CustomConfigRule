@@ -1,7 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
-  # ObjectVersion:
-  #   Type: String
   CodeBucket:
     Type: String
     Default: "us-east-1-jp-cfn-241-lambda-code"
