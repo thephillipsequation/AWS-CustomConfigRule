@@ -36,8 +36,8 @@ Resources:
         S3Key: "lambdacode.zip"
         # S3ObjectVersion: !Ref ObjectVersion
       Description: Checks if S3 bucket names comply with naming convention
-      FunctionName: S3BucketComplianceCheck
-      Handler: S3BucketComplianceCheck
+      FunctionName: main
+      Handler: Handler
       Role: !Sub arn:aws:iam::${AWS::AccountId}:role/${LambdaRole} 
       Runtime: go1.x
 
