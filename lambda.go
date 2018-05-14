@@ -2,14 +2,18 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
-	// "github.com/aws/aws-sdk-go/aws/session"
-	// "github.com/aws/aws-sdk-go/service/configservice"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/configservice"
+	"github.com/jmoiron/jsonq"
 	"strings"
+	"time"
 )
 
+// Structure for AWS Config Event, this is used to catch the config event and trigger the rule
 type ConfigEvent struct {
 	AccountID        string `json:"accountId"`     // The ID of the AWS account that owns the rule
 	ConfigRuleArn    string `json:"configRuleArn"` // The ARN that AWS Config assigned to the rule
@@ -33,30 +37,41 @@ func evaluateCompliance(bucketName, region string) string {
 
 func Handler(ctx context.Context, event ConfigEvent) (string, error) {
 
-	// session := session.Must(session.NewSession())
-	// config := configservice.New(session, &aws.Config{})
+	session := session.Must(session.NewSession())
+	config := configservice.New(session, &aws.Config{})
+	data := map[string]interface{}{}
+	dec := json.NewDecoder(strings.NewReader(event.InvokingEvent))
+	dec.Decode(&data)
+	jq := jsonq.NewQuery(data)
+
 	fmt.Print(aws.String(event.InvokingEvent))
-	// params := &configservice.PutEvaluationsInput{
-	// 	ResultToken: aws.String("String"), // Required
-	// 	Evaluations: []*configservice.Evaluation{
-	// 		{ // Required
-	// 			ComplianceResourceId:   aws.String(resourceId), // Required
-	// 			ComplianceResourceType: aws.String(resourceType), // Required
-	// 			ComplianceType:         aws.String(evaluateCompliance()),         // Required
-	// 			OrderingTimestamp:      aws.Time(time.Now()),                 // Required
-	// 		},
-	// 		// More values...
-	// 	},
-	// }
-	// resp, err = config.PutEvaluations(params)
-	// if err != nil {
-	// 	// Print the error, cast err to the awserr.Error to get the Code and
-	// 	// Message from an error.
-	// 	fmt.PrinLn(err.Error())
-	// 	return
-	// }
-	// violation := nameViolation(bucketName, region)
-	return fmt.Sprintf("InvokingEvent: %s", event.InvokingEvent), nil
+	bucketName, err := jq.String("configurationItem", "resourceName")
+	region, err := jq.String("configurationItem", "awsRegion")
+	resourceType, err := jq.String("configurationItem", "resourceType")
+	resourceID, err := jq.String("configurationItem", "resourceID")
+	complianceValue := evaluateCompliance(bucketName, region)
+
+	params := &configservice.PutEvaluationsInput{
+		ResultToken: aws.String("String"), // Required
+		Evaluations: []*configservice.Evaluation{
+			{ // Required
+				ComplianceResourceId:   aws.String(resourceID),      // Required
+				ComplianceResourceType: aws.String(resourceType),    // Required
+				ComplianceType:         aws.String(complianceValue), // Required
+				OrderingTimestamp:      aws.Time(time.Now()),        // Required
+			},
+		},
+	}
+
+	resp, err := config.PutEvaluations(params)
+	if err != nil {
+		// Print the error, cast err to the awserr.Error to get the Code and
+		// Message from an error.
+		fmt.Println(err.Error())
+	}
+	fmt.Println(resp)
+
+	return bucketName, err
 
 }
 
