@@ -14,16 +14,16 @@ import (
 )
 
 // Structure for AWS Config Event, this is used to catch the config event and trigger the rule
-type ConfigEvent struct {
-	AccountID        string `json:"accountId"`     // The ID of the AWS account that owns the rule
-	ConfigRuleArn    string `json:"configRuleArn"` // The ARN that AWS Config assigned to the rule
-	ConfigRuleID     string `json:"configRuleId"`
-	ConfigRuleName   string `json:"configRuleName"` // The name that you assigned to the rule that caused AWS Config to publish the event
-	EventLeftScope   bool   `json:"eventLeftScope"` // A boolean value that indicates whether the AWS resource to be evaluated has been removed from the rule's scope
+type configEvent struct {
+	InvokingEvent    string `json:"invokingEvent"`
+	RuleParameters   string `json:"ruleParameters"`
+	ResultToken      string `json:"resultToken"`
+	EventLeftScope   bool   `json:"eventLeftScope"`
 	ExecutionRoleArn string `json:"executionRoleArn"`
-	InvokingEvent    string `json:"invokingEvent"`  // If the event is published in response to a resource configuration change, this value contains a JSON configuration item
-	ResultToken      string `json:"resultToken"`    // A token that the function must pass to AWS Config with the PutEvaluations call
-	RuleParameters   string `json:"ruleParameters"` // Key/value pairs that the function processes as part of its evaluation logic
+	ConfigRuleArn    string `json:"configRuleArn"`
+	ConfigRuleName   string `json:"configRuleName"`
+	ConfigRuleId     string `json:"configRuleId"`
+	AccountId        string `json:"accountId"`
 	Version          string `json:"version"`
 }
 
@@ -48,7 +48,7 @@ func Handler(ctx context.Context, event ConfigEvent) (string, error) {
 	bucketName, err := jq.String("configurationItem", "resourceName")
 	region, err := jq.String("configurationItem", "awsRegion")
 	resourceType, err := jq.String("configurationItem", "resourceType")
-	resourceID, err := jq.String("configurationItem", "resourceID")
+	resourceId, err := jq.String("configurationItem", "resourceId")
 	complianceValue := evaluateCompliance(bucketName, region)
 
 	params := &configservice.PutEvaluationsInput{
