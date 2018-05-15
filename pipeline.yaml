@@ -198,25 +198,45 @@ Resources:
                 # TemplateConfiguration: Source::ConfigRuleParamters.json
               RunOrder: 3
         - 
-         Name: CreateBuckets
-         Actions: 
-           - 
-             InputArtifacts:
-               - Name: Source
-             Name: CreateBuckets
-             ActionTypeId:
-               Category: Deploy
-               Owner: AWS
-               Version: 1
-               Provider: CloudFormation
+          Name: DeleteBuckets
+          Actions: 
+            - 
+              InputArtifacts:
+                - Name: Source
+              Name: DeleteBuckets
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: CloudFormation
              
-             Configuration:
-               StackName: jp-cfn-241-buckets
-               RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/${CodePipelineRole}
-               ActionMode: CREATE_UPDATE
-               Capabilities: CAPABILITY_NAMED_IAM
-               TemplatePath: Source::s3buckets.yaml
-             RunOrder: 3
+              Configuration:
+                StackName: jp-cfn-241-buckets
+                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/${CodePipelineRole}
+                ActionMode: DELETE_ONLY
+                Capabilities: CAPABILITY_NAMED_IAM
+                TemplatePath: Source::s3buckets.yaml
+              RunOrder: 3
+        - 
+          Name: CreateBuckets
+          Actions: 
+            - 
+              InputArtifacts:
+                - Name: Source
+              Name: CreateBuckets
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: CloudFormation
+             
+              Configuration:
+                StackName: jp-cfn-241-buckets
+                RoleArn: !Sub arn:aws:iam::${AWS::AccountId}:role/${CodePipelineRole}
+                ActionMode: CREATE_UPDATE
+                Capabilities: CAPABILITY_NAMED_IAM
+                TemplatePath: Source::s3buckets.yaml
+              RunOrder: 4
         
     
 
