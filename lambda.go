@@ -14,7 +14,7 @@ import (
 )
 
 // Structure for AWS Config Event, this is used to catch the config event and trigger the rule
-type configEvent struct {
+type ConfigEvent struct {
 	InvokingEvent    string `json:"invokingEvent"`
 	RuleParameters   string `json:"ruleParameters"`
 	ResultToken      string `json:"resultToken"`
