@@ -52,17 +52,16 @@ func Handler(ctx context.Context, event ConfigEvent) (string, error) {
 	complianceValue := evaluateCompliance(bucketName, region)
 
 	params := &configservice.PutEvaluationsInput{
-		ResultToken: aws.String("String"), // Required
+		ResultToken: aws.String(event.ResultToken), // Required
 		Evaluations: []*configservice.Evaluation{
-			{ // Required
-				ComplianceResourceId:   aws.String(resourceID),      // Required
-				ComplianceResourceType: aws.String(resourceType),    // Required
+			{
+				ComplianceResourceId:   aws.String(resourceId), // Required
+				ComplianceResourceType: aws.String(resourceType),
 				ComplianceType:         aws.String(complianceValue), // Required
 				OrderingTimestamp:      aws.Time(time.Now()),        // Required
 			},
 		},
 	}
-
 	resp, err := config.PutEvaluations(params)
 	if err != nil {
 		// Print the error, cast err to the awserr.Error to get the Code and
