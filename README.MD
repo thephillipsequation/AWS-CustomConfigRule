@@ -1,5 +1,11 @@
 ## Quick Demo of AWS Custom Config Rules using GO
 
+This project will build and deploy:
+* a pipeline for deploying custom AWS Config rules
+* a sample lambda / config rule written in golang
+
+I've used this as a boilerplate for many projects over the years, feel free to steal the pattern and make it your own :)
+
 ## Requirements
 You must have an environment variable set for `GIT_TOKEN` that is equal to an OAUTH token capable of cloning this (or your own hosted) repo in order for the pipeline to work. 
 
